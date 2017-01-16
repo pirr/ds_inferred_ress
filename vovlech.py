@@ -14,7 +14,7 @@ all_cols.update(cat_cols)
 #file_path = u'd://work//!Прогнозные ресурсы//АК, РА//reestr_ak-ra_gkm_05082016.xls'
 file_path = u'd://Smaga//!EXCHENGE//Марина//a_reestr_io_200916.xls'
 data = pd.read_excel(file_path, header=1)
-data = data[1:]
+data = data[data[u'Актуальность строки']=='А'][1:]
 data[u'Название ПИ по ГБЗ'] = data[u'Название ПИ по ГБЗ'].str.capitalize()
 #data = data[data[u'Субъект РФ']==u'Республика Алтай']
 obj_pis_df = data[list(all_cols.keys()) + [u'№ объекта', u'Вид документа регистрации1)']]
@@ -100,7 +100,7 @@ a['fund'] = pd.Categorical(a['fund'], [u"всего", u"в т.ч. с ресур�
 a = a.sort_values(['pi', 'fund', 'unit'])
 cs = ['P3', 'P2', 'P1', 'non_cat', 'C2']
 sort_cols = list(chain(*zip(t+' '+c for c in cs for t in ('val', 'cnt'))))
-sort_cols.insert(8, 'total_cnt')
-sort_cols.insert(9, 'total_val')
+sort_cols.insert(8, 'total_val')
+sort_cols.insert(9, 'total_cnt')
 sort_cols = ['pi', 'fund', 'unit'] + sort_cols
 a[sort_cols].to_csv('vovlech_test_3110.csv', sep=';')
