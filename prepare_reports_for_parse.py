@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import re
 
 report_cols = ['Номер ТГФ', 'Номер РГФ', 'ИД',
                'Код документа', 'Автор', 'Год утверждения',
@@ -30,7 +31,7 @@ reports_from_nedra['gkm_tgf'] = reports_from_nedra.apply(
     lambda x: '-'.join([x[u'Массив ГКМ'], str(int(x[u'Номер паспорта ТГФ']))]), axis=1)
 reports_from_nedra['authors'] = reports_from_nedra[
     'Автор'].str.findall(sec_name_pat)
-reports_from_nedra['invn'] = reports_from_nedra['Инвентарный номер документа']
+reports_from_nedra['invn'] = reports_from_nedra['Номер ТГФ']
 
 reports_for_scan = pd.read_excel(
     'Отчеты_для_сканирования_rab.xls', sheetname='Лист1', header=1)
@@ -43,7 +44,7 @@ reports_from_nedra_scan = reports_from_nedra[
 reports_from_nedra_scan.dropna(subset=['gkm_tgf', 'authors'], inplace=True)
 reports_from_nedra_scan['authors'] = reports_from_nedra_scan[
     'authors'].apply(lambda x: ','.join(x) if '' not in x else '')
-reports_from_nedra_scan.to_csv('for_parser_test.csv', sep=';')
+reports_from_nedra_scan.to_csv('for_parser_test_19012017.csv', sep=';')
 # reports_for_scan.loc[~pd.isnull(reports_for_scan['author_sec_name']), 'author_sec_name'] = reports_for_scan['author_sec_name'].apply(lambda x: set(x))
 # reports_for_scan_with_tgf_num = pd.merge(reports_for_scan, reports_from_nedra, how='outer',
 #                                          left_on=['obj_number', 'author'], right_on=['gkm_tgf', 'Автор'])

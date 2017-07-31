@@ -19,7 +19,7 @@ r_data = {'authors': '', 'invn': '',
           'ftext': '', 'search': '0', 'docname': '', 'nom': '',
           'pnum': '', 'pdate': '', 'penddate': '', 'year': '',
           'place': '', 'full': '1', 'gg': '', 'mode': 'extctl',
-          'orgisp': '', 'source': '', 'pi': ''}
+          'orgisp': '', 'source': '', 'pi': '', 'gf[]': '17'}
 
 
 def html_text_from_post(**kwargs):
@@ -35,17 +35,16 @@ def html_text_from_post(**kwargs):
 
 
 def parse_rfgf(row):
-    if row['invn'] != '':
-        row['invn'] = int(row['invn'])
-    text = html_text_from_post(
-        authors=row['authors'], invn=row['invn'], pi=row['pi'])
+    # if row['invn'] != '':
+    #     row['invn'] = int(row['invn'])
+    text = html_text_from_post(invn=row['Инв.№'])
     if text is not None:
         tree = etree.fromstring(text, parser)
         results = tree.xpath('//tr//td[position()=2]//a')
         urls = ['http://www.rfgf.ru/catalog/' +
                 res.get('href').lstrip('./') for res in results]
-        sys.stdout.write('{}) {}\n'.format(
-            row['gkm_tgf'], ', '.join(urls)))
+        sys.stdout.write(u'{}) {}\n'.format(
+            row['Инв.№'], ', '.join(urls)))
         row['urls'] = ', '.join(urls)
 
     return row
@@ -53,14 +52,13 @@ def parse_rfgf(row):
 
 if __name__ == '__main__':
     start = datetime.now()
-    df = pd.read_csv(
-        'D://work//!Прогнозные ресурсы//Иркутская область//for_parser_test.csv', sep=';', encoding='cp1251')
+    df = pd.read_excel(u'D://work//!Прогнозные ресурсы//Иркутская область//кат_фонд.xls', encoding='cp1251', skiprows=1)
     df.fillna('', inplace=True)
     with Pool(processes=4) as pool:
         rows = pool.map(parse_rfgf, df.to_dict('records'))
         # print(rows)
         ress = pd.DataFrame(rows)
-        ress.to_csv('ress.csv', sep=';')
+        ress.to_csv('reports_090217.csv', sep=';')
         print('\nParce complete')
 
     print(datetime.now() - start)
